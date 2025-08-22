@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../common/css/reset.css">
+  <link rel="stylesheet" href="../../common/css/base.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <title>Document</title>
+</head>
+<body>
+  <div class="wrapper" id="wrapper">
+    <button type="button" class="btn search-btn" id="pokemon_search">ポケモンを探す</button>
+  </div>
+  <script src="../../common/js/jquery.js"></script>
+  <script>
+    // 回答はここに書いてね
+
+        // 「捕まえる」失敗時の画面表示
+  let failHtml =
+  `
+    <p class="text">逃げられてしまった...</p>
+    <button class="btn mt" data-js="reset">戻る</button>
+  `
+
+  // 「ポケモンを探す」後の画面表示
+  let encountHtml =
+  `
+    <p class="name"></p>
+    <div>
+      <img class="img" src="" alt="">
+    </div>
+    <div>
+      <button class="btn" id="catch">捕まえる</button>
+      <button class="btn" data-js="reset">逃げる</button>
+    </div>
+  `
+
+  // 「捕まえる」成功時の画面表示
+  let doneHtml =
+  `
+    <p class="name">ゲットしました</p>
+    <div>
+      <img class="img" src="" alt="">
+    </div>
+    <button class="btn" data-js="reset">戻る</button>
+  `
+
+    $(function() {
+      $('#pokemon_search').on('click',function() {
+          console.log('Click');
+          let pokeId = Math.floor(Math.random() * 151) + 1;
+
+          $.ajax({
+            url: `https://pokeapi.co/api/v2/pokemon-species/${pokeId}`,
+            method: 'GET',
+          }).done(function(res) {
+            let japanesePokemonName = res.names.find(name => name.language.name === 'ja').name;
+            
+            $('wrapper').html(encountHtml);
+            $('.name').text(japanesePokemonName);
+
+            $('.img').after('src',
+              `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`);
+            
+          }).fail(function(err) {
+            alert('ポケモンの取得に失敗しました');
+          });
+
+          $(document).on('click', '#catch', function () {
+            if (Math.random() < 0.5) {
+              $('.wrapper').html(doneHtml);
+          $('.name').text(`${japanesePokemonName} をゲットした`);
+        } else {
+          $('.wrapper').html(failHtml);
+          }
+          });
+      });
+    });
+  </script>
+</body>
+</html>
