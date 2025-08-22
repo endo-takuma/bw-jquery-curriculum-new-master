@@ -13,71 +13,82 @@
   <div class="wrapper" id="wrapper">
     <button type="button" class="btn search-btn" id="pokemon_search">ポケモンを探す</button>
   </div>
-  <script src="../../common/js/jquery.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
     // 回答はここに書いてね
+    
+      // 初期状態の画面表示
+      const initialHtml = `<button type="button" class="btn search-btn" id="pokemon_search">ポケモンを探す</button>`;
 
-        // 「捕まえる」失敗時の画面表示
-  let failHtml =
-  `
-    <p class="text">逃げられてしまった...</p>
-    <button class="btn mt" data-js="reset">戻る</button>
-  `
+      // 「捕まえる」失敗時の画面表示
+      const failHtml =
+      `
+        <p class="text">逃げられてしまった...</p>
+        <button class="btn mt" data-js="reset">戻る</button>
+      `;
 
-  // 「ポケモンを探す」後の画面表示
-  let encountHtml =
-  `
-    <p class="name"></p>
-    <div>
-      <img class="img" src="" alt="">
-    </div>
-    <div>
-      <button class="btn" id="catch">捕まえる</button>
-      <button class="btn" data-js="reset">逃げる</button>
-    </div>
-  `
+      // 「ポケモンを探す」後の画面表示
+      const encountHtml =
+      `
+        <p class="name"></p>
+        <div>
+          <img class="img" src="" alt="">
+        </div>
+        <div>
+          <button class="btn" id="catch">捕まえる</button>
+          <button class="btn" data-js="reset">逃げる</button>
+        </div>
+      `;
 
-  // 「捕まえる」成功時の画面表示
-  let doneHtml =
-  `
-    <p class="name">ゲットしました</p>
-    <div>
-      <img class="img" src="" alt="">
-    </div>
-    <button class="btn" data-js="reset">戻る</button>
-  `
+      // 「捕まえる」成功時の画面表示
+      const doneHtml =
+      `
+        <p class="name">ゲットしました</p>
+        <div>
+          <img class="img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="モンスターボール">
+        </div>
+        <button class="btn" data-js="reset">戻る</button>
+      `;
 
     $(function() {
-      $('#pokemon_search').on('click',function() {
-          console.log('Click');
-          let pokeId = Math.floor(Math.random() * 151) + 1;
+    $(document).on('click', '#pokemon_search', function() {
 
-          $.ajax({
-            url: `https://pokeapi.co/api/v2/pokemon-species/${pokeId}`,
-            method: 'GET',
-          }).done(function(res) {
-            let japanesePokemonName = res.names.find(name => name.language.name === 'ja').name;
-            
-            $('wrapper').html(encountHtml);
-            $('.name').text(japanesePokemonName);
+      // 1から151までの数値をランダムに出力する処理
+      let pokeId = Math.floor(Math.random() * 151) + 1;
 
-            $('.img').after('src',
-              `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`);
-            
-          }).fail(function(err) {
-            alert('ポケモンの取得に失敗しました');
-          });
+      $.ajax({
+        url: `https://pokeapi.co/api/v2/pokemon-species/${pokeId}`,
+        method: 'GET',
+      }).done(function(res) {
+        // ポケモンの日本名を取得する処理
+        let japanesePokeName = res.names.find(name => name.language.name === 'ja-Hrkt').name;
 
-          $(document).on('click', '#catch', function () {
-            if (Math.random() < 0.5) {
-              $('.wrapper').html(doneHtml);
-          $('.name').text(`${japanesePokemonName} をゲットした`);
-        } else {
-          $('.wrapper').html(failHtml);
-          }
-          });
+        $('.wrapper').html(encountHtml);
+        $('.name').text(japanesePokeName);
+        $('.img').attr('src', `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`);
+
+      }).fail(function(err) {
+        alert('ポケモンの取得に失敗しました');
       });
     });
-  </script>
+
+    $(document).on('click', '#catch', function () {
+      // 50%でゲット、50%で逃げられる処理
+      if (Math.random() < 0.5) {
+        // 成功
+        $('.wrapper').html(doneHtml);
+      } else {
+        // 失敗
+        $('.wrapper').html(failHtml);
+      }
+    });
+
+    $(document).on('click', '[data-js="reset"]', function () {
+      // ポケモンを探すボタンを再配置
+      $('.wrapper').html(initialHtml);
+    });
+  });
+</script>
+
 </body>
 </html>
