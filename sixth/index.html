@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -50,44 +51,7 @@
         <button class="btn" data-js="reset">戻る</button>
       `;
 
-    $(function() {
-    $(document).on('click', '#pokemon_search', function() {
 
-      // 1から151までの数値をランダムに出力する処理
-      let pokeId = Math.floor(Math.random() * 151) + 1;
-
-      $.ajax({
-        url: `https://pokeapi.co/api/v2/pokemon-species/${pokeId}`,
-        method: 'GET',
-      }).done(function(res) {
-        // ポケモンの日本名を取得する処理
-        let japanesePokeName = res.names.find(name => name.language.name === 'ja-Hrkt').name;
-
-        $('.wrapper').html(encountHtml);
-        $('.name').text(japanesePokeName);
-        $('.img').attr('src', `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`);
-
-      }).fail(function(err) {
-        alert('ポケモンの取得に失敗しました');
-      });
-    });
-
-    $(document).on('click', '#catch', function () {
-      // 50%でゲット、50%で逃げられる処理
-      if (Math.random() < 0.5) {
-        // 成功
-        $('.wrapper').html(doneHtml);
-      } else {
-        // 失敗
-        $('.wrapper').html(failHtml);
-      }
-    });
-
-    $(document).on('click', '[data-js="reset"]', function () {
-      // ポケモンを探すボタンを再配置
-      $('.wrapper').html(initialHtml);
-    });
-  });
 </script>
 
 </body>
